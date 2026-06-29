@@ -182,6 +182,10 @@ input:checked+.slt:before{transform:translateX(16px)}
 .bsave{background:#16A34A;border:none;border-radius:7px;padding:8px 16px;font-size:12px;font-family:'Oswald',sans-serif;color:#fff;cursor:pointer;margin-top:10px;font-weight:600}
 .saveok{font-size:11px;color:#16A34A;margin-left:8px;display:none}
 
+.site-footer{text-align:center;font-size:10px;color:#9CA3AF;padding:1.2rem 1rem 1rem;line-height:1.5;max-width:700px;margin:0 auto}
+
+.pwd-hint{font-size:11px;color:#6B7280;background:#F9FAFB;border:1px solid var(--b);border-radius:8px;padding:.75rem .9rem;margin-bottom:1rem;line-height:1.5}
+
 
 
 @media(max-width:380px){
@@ -237,9 +241,9 @@ input:checked+.slt:before{transform:translateX(16px)}
     </div>
     <div class="stitle"><span class="stitle-bar"></span>Ressources communes</div>
     <div class="cgrid">
-      <div class="cc"><div class="cc-icon"><i class="ti ti-shield-check"></i></div><span>Santé &amp; Sécurité</span></div>
+      <div class="cc" onclick="showCommune('securite')"><div class="cc-icon"><i class="ti ti-shield-check"></i></div><span>Santé & Sécurité</span></div>
       <div class="cc" onclick="showCommune('dechets')"><div class="cc-icon"><i class="ti ti-recycle"></i></div><span>Déchets BTP</span></div>
-      <div class="cc"><div class="cc-icon"><i class="ti ti-leaf"></i></div><span>EDC &amp; Éco-gestes</span></div>
+      <div class="cc" onclick="showCommune('edc')"><div class="cc-icon"><i class="ti ti-leaf"></i></div><span>EDC</span></div>
       <div class="cc" onclick="showGlo()"><div class="cc-icon"><i class="ti ti-books"></i></div><span>Glossaire métier</span></div>
       <div class="cc" onclick="showCommune('quiz')"><div class="cc-icon"><i class="ti ti-device-gamepad-2"></i></div><span>Tous les quiz</span></div>
     </div>
@@ -250,6 +254,7 @@ input:checked+.slt:before{transform:translateX(16px)}
       <div class="rlist" id="rlist"></div>
     </div>
   </div>
+  <div class="site-footer">© 2026 Mickaël Batoux – Tous droits réservés.<br>Toute reproduction, même partielle, des contenus de ce site est interdite sans autorisation.</div>
 </div>
 
 <div id="SC">
@@ -258,6 +263,7 @@ input:checked+.slt:before{transform:translateX(16px)}
     <button class="bout" onclick="backD()">← Retour</button>
   </div>
   <div class="dash"><div class="rlist" id="sc-list"></div></div>
+  <div class="site-footer">© 2026 Mickaël Batoux – Tous droits réservés.<br>Toute reproduction, même partielle, des contenus de ce site est interdite sans autorisation.</div>
 </div>
 
 <div id="SG">
@@ -270,6 +276,7 @@ input:checked+.slt:before{transform:translateX(16px)}
     <div class="abar" id="abar"></div>
     <div id="glist"></div>
   </div>
+  <div class="site-footer">© 2026 Mickaël Batoux – Tous droits réservés.<br>Toute reproduction, même partielle, des contenus de ce site est interdite sans autorisation.</div>
 </div>
 
 <div id="SA">
@@ -281,19 +288,31 @@ input:checked+.slt:before{transform:translateX(16px)}
     <div class="atabs">
       <button class="atab sel" onclick="swA('unlock',this)">🔓 Déverrouillage</button>
       <button class="atab" onclick="swA('edit',this)">✏️ Modifier le contenu</button>
+      <button class="atab" onclick="swA('commun',this)">📦 Ressources communes</button>
+      <button class="atab" onclick="swA('pwd',this)">🔑 Mots de passe</button>
           </div>
     <div class="apanel vis" id="ap-unlock"><div class="ptabs" id="ptabs"></div><div id="ptoggles"></div><div class="codebox"><p>Codes d'accès</p><div class="codegrid" id="codegrid"></div></div></div>
     <div class="apanel" id="ap-edit"><div class="ptabs" id="etabs"></div><div class="elist" id="elist"></div></div>
+    <div class="apanel" id="ap-commun"><div class="ptabs" id="ctabs"></div><div class="elist" id="clist"></div></div>
+    <div class="apanel" id="ap-pwd">
+      <div class="pwd-hint">Modifie ici les codes de classe et le code formateur. Pense à cliquer sur Enregistrer puis à demander la mise à jour du fichier final pour que les nouveaux codes soient actifs pour tout le monde.</div>
+      <div id="pwdlist"></div>
+      <button class="bsave" onclick="svPwd()">✓ Enregistrer les codes</button>
+      <span class="saveok" id="pwd-saveok">Sauvegardé !</span>
+    </div>
 
   </div>
+  <div class="site-footer">© 2026 Mickaël Batoux – Tous droits réservés.<br>Toute reproduction, même partielle, des contenus de ce site est interdite sans autorisation.</div>
 </div>
 
 <script>
 const COMMUNES={
+  securite:{title:'Santé & Sécurité',items:[]},
   dechets:{title:'Déchets BTP',items:[
     {type:'ppt',name:'Le traitement des déchets — Diaporama',url:'https://view.genially.com/64f6d487e9f79c0017bf4d6f'},
     {type:'quiz',name:'Quiz — Le traitement des déchets',url:'https://view.genially.com/631af3efc41c420018ae52b5'}
   ]},
+  edc:{title:'EDC',items:[]},
   quiz:{title:'Tous les quiz',items:[
     {type:'quiz',name:"Quiz — L'outillage du peintre",url:'https://view.genially.com/63248307040209001100ab0a'},
     {type:'quiz',name:'Quiz — Le traitement des déchets',url:'https://view.genially.com/631af3efc41c420018ae52b5'},
@@ -481,7 +500,7 @@ const PR={
   ]}
 };
 
-const AC='BABAT';
+let AC='BABAT';
 let cp=null,cpk=null,cap='CAP1',cep='CAP1',oei=-1,ogi=-1;
 
 function chkA(v){if(v.toUpperCase()===AC)showA();}
@@ -502,14 +521,19 @@ function showCommune(key){
   document.getElementById('sc-title').textContent=c.title;
   document.getElementById('sc-sub').textContent=cpk?PR[cpk].label:'';
   const list=document.getElementById('sc-list');list.innerHTML='';
-  c.items.forEach(r=>list.appendChild(mkR(r)));
+  if(c.items.length===0){
+    const d=document.createElement('div');d.style.cssText='font-size:12px;color:#6B7280;padding:.5rem 0';
+    d.textContent='Ressources à venir.';list.appendChild(d);
+  } else {
+    c.items.forEach(r=>list.appendChild(mkR(r)));
+  }
 }
 function showGlo(){
   hideAll();document.getElementById('SG').style.display='block';
   document.getElementById('gsub').textContent=cpk?PR[cpk].label:'';
   document.getElementById('gs').value='';ogi=-1;rAbar(GL);rGlist(GL);
 }
-function showA(){hideAll();document.getElementById('SA').style.display='block';rPtabs();rToggles();rCodes();rEtabs();rElist();}
+function showA(){hideAll();document.getElementById('SA').style.display='block';rPtabs();rToggles();rCodes();rEtabs();rElist();rCtabs();rClist();rPwdList();}
 function logout(){
   cp=null;cpk=null;
   document.getElementById('ci').value='';
@@ -649,9 +673,15 @@ function rElist(){
       </div>
       <button class="bsave" onclick="svS(${i})">✓ Enregistrer</button>
       <span class="saveok" id="sok-${i}">Sauvegardé !</span>
+      <button class="bdel" style="margin-top:10px;margin-left:8px" onclick="dStage(${i})">✕ Supprimer ce stage</button>
     </div>`;
     el.appendChild(card);
   });
+  const addStageBtn=document.createElement('button');
+  addStageBtn.className='badd';addStageBtn.textContent='+ Ajouter un stage à '+p.label;
+  addStageBtn.style.marginTop='8px';
+  addStageBtn.onclick=()=>{p.stages.push({title:'Nouveau stage',obj:'',comp:'',bloc:'',res:[]});oei=p.stages.length-1;rElist();};
+  el.appendChild(addStageBtn);
 }
 function tei(i){oei=oei===i?-1:i;rElist();}
 function svS(i){
@@ -673,6 +703,78 @@ function svS(i){
 }
 function aRes(i){const s=PR[cep].stages[i];if(!s.res)s.res=[];s.res.push({type:'ppt',name:'',url:''});oei=i;rElist();}
 function dRes(i,ri){PR[cep].stages[i].res.splice(ri,1);oei=i;rElist();}
+function dStage(i){
+  const p=PR[cep];
+  if(p.stages.length<=1){alert('Impossible de supprimer : il doit rester au moins un stage.');return;}
+  p.stages.splice(i,1);
+  if(p.unlocked>p.stages.length)p.unlocked=p.stages.length;
+  oei=-1;rElist();rToggles();rPtabs();
+}
+
+let ccat='dechets',oci=-1;
+function rCtabs(){
+  const t=document.getElementById('ctabs');t.innerHTML='';
+  Object.keys(COMMUNES).forEach(k=>{const b=document.createElement('button');b.className='ptab'+(k===ccat?' sel':'');b.textContent=COMMUNES[k].title;b.onclick=()=>{ccat=k;oci=-1;rCtabs();rClist();};t.appendChild(b);});
+}
+function rClist(){
+  const cat=COMMUNES[ccat];const el=document.getElementById('clist');el.innerHTML='';
+  cat.items.forEach((r,i)=>{
+    const isO=oci===i;const card=document.createElement('div');card.className='ecard';
+    card.innerHTML=`<div class="ehead" onclick="tci(${i})"><div class="ehl"><span class="enum">${i+1}</span><span class="etitle">${r.name}</span></div><span class="earr${isO?' open':''}">›</span></div>
+    <div class="ebody${isO?' vis':''}" id="cb-${i}">
+      <div class="frow"><div class="flbl">Nom de la ressource</div><input class="fi" id="cn-${i}" value="${r.name}"></div>
+      <div class="frow"><div class="flbl">Type</div>
+        <select class="fi" id="ct-${i}">
+          <option value="ppt" ${r.type==='ppt'?'selected':''}>Diaporama Genially</option>
+          <option value="quiz" ${r.type==='quiz'?'selected':''}>Quiz interactif</option>
+          <option value="pdf" ${r.type==='pdf'?'selected':''}>Document PDF</option>
+          <option value="game" ${r.type==='game'?'selected':''}>Jeu pédagogique</option>
+        </select>
+      </div>
+      <div class="frow"><div class="flbl">URL</div><input class="fi" id="cu-${i}" value="${r.url||''}"></div>
+      <button class="bdel" onclick="dCres(${i})">✕ Supprimer cette ressource</button>
+      <button class="bsave" onclick="svC(${i})">✓ Enregistrer</button>
+      <span class="saveok" id="cok-${i}">Sauvegardé !</span>
+    </div>`;
+    el.appendChild(card);
+  });
+  const addBtn=document.createElement('button');
+  addBtn.className='badd';addBtn.textContent='+ Ajouter une ressource à '+cat.title;
+  addBtn.onclick=()=>{cat.items.push({type:'ppt',name:'Nouvelle ressource',url:''});oci=cat.items.length-1;rClist();};
+  el.appendChild(addBtn);
+}
+function tci(i){oci=oci===i?-1:i;rClist();}
+function svC(i){
+  const cat=COMMUNES[ccat];const r=cat.items[i];
+  r.name=document.getElementById(`cn-${i}`).value;
+  r.type=document.getElementById(`ct-${i}`).value;
+  r.url=document.getElementById(`cu-${i}`).value;
+  const ok=document.getElementById(`cok-${i}`);ok.style.display='inline';
+  setTimeout(()=>{ok.style.display='none';rClist();},1500);
+}
+function dCres(i){COMMUNES[ccat].items.splice(i,1);oci=-1;rClist();}
+
+function rPwdList(){
+  const el=document.getElementById('pwdlist');el.innerHTML='';
+  const row=document.createElement('div');row.className='trow';
+  row.innerHTML=`<div><div class="tl">Code formateur</div><div class="ts2">Accès à cet espace de gestion</div></div><input class="fi" id="pwd-admin" value="${AC}" style="max-width:140px;text-align:center;letter-spacing:2px">`;
+  el.appendChild(row);
+  Object.entries(PR).forEach(([k,p])=>{
+    const r=document.createElement('div');r.className='trow';
+    r.innerHTML=`<div><div class="tl">${p.label}</div><div class="ts2">Code de classe ${k}</div></div><input class="fi" id="pwd-${k}" value="${p.code}" style="max-width:140px;text-align:center;letter-spacing:2px">`;
+    el.appendChild(r);
+  });
+}
+function svPwd(){
+  AC=document.getElementById('pwd-admin').value.trim().toUpperCase();
+  Object.keys(PR).forEach(k=>{
+    const v=document.getElementById(`pwd-${k}`).value.trim().toUpperCase();
+    if(v)PR[k].code=v;
+  });
+  rCodes();
+  const ok=document.getElementById('pwd-saveok');ok.style.display='inline';
+  setTimeout(()=>{ok.style.display='none';},2000);
+}
 
 document.getElementById('SL').style.display='flex';
 </script>
